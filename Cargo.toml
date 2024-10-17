@@ -27,6 +27,10 @@ tower = { version = "0.4.13", features = ["full"] }
 tower-http = { version = "0.5", features = ["full"] }
 wasm-bindgen = "=0.2.93"
 
+chrono = "0.4"
+icondata = "0.4"
+palette = "0.7"
+
 quote = "1.0.35"
 comrak = "0.21.0"
 proc-macro2 = "1.0.78"
