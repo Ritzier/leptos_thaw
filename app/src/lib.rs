@@ -1,42 +1,80 @@
-use crate::error_template::{AppError, ErrorTemplate};
+use leptos::{prelude::*, reactive::wrappers::write::SignalSetter};
+use leptos_meta::{provide_meta_context, MetaTags};
+use leptos_router::{
+    components::{Route, Router, Routes},
+    path,
+};
+use thaw::ssr::SSRMountStyleProvider;
+use thaw::*;
 
-mod error_template;
-
-use leptos::*;
-use leptos_meta::*;
-use leptos_router::*;
+pub fn shell(options: LeptosOptions) -> impl IntoView {
+    view! {
+        <SSRMountStyleProvider>
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <meta charset="utf-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <AutoReload options=options.clone() />
+                    <HydrationScripts options />
+                    <MetaTags />
+                </head>
+                <body>
+                    <App />
+                </body>
+            </html>
+        </SSRMountStyleProvider>
+    }
+}
 
 #[component]
 pub fn App() -> impl IntoView {
-    // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context();
+    let dir = RwSignal::new(ConfigDirection::Ltr);
 
     view! {
-        <Stylesheet id="leptos" href="/pkg/leptos-workspace.css" />
+        <ConfigProvider dir=dir>
+            <ToasterProvider>
+                <LoadingBarProvider>
+                    <TheRouter />
+                </LoadingBarProvider>
+            </ToasterProvider>
+        </ConfigProvider>
+    }
+}
 
-        // sets the document tile
-        <Title text="Welcome to Leptos" />
+#[component]
+fn TheRouter() -> impl IntoView {
+    let loading_bar = LoadingBarInjection::expect_use();
+    let is_routing = RwSignal::new(false);
+    let set_is_routing = SignalSetter::map(move |is_routing_data| {
+        is_routing.set(is_routing_data);
+    });
 
-        // content for this welcome page
-        <Router fallback=|| {
-            let mut outside_errors = Errors::default();
-            outside_errors.insert_with_default_key(AppError::NotFound);
-            view! { <ErrorTemplate outside_errors /> }.into_view()
-        }>
-            <main>
-                <Routes>
-                    <Route path="" view=HomePage />
-                </Routes>
-            </main>
+    Effect::watch(
+        move || is_routing.get(),
+        move |is_routing, _, _| {
+            if *is_routing {
+                loading_bar.start();
+            } else {
+                loading_bar.finish();
+            }
+        },
+        false,
+    );
+
+    view! {
+        <Router set_is_routing>
+            <Routes fallback=|| "404">
+                <Route path=path!("/") view=Home />
+            </Routes>
         </Router>
     }
 }
 
-/// Renders the home page of your application.
 #[component]
-fn HomePage() -> impl IntoView {
-    // Creates a reactive value to update the button
-    let (count, set_count) = create_signal(0);
+fn Home() -> impl IntoView {
+    let (count, set_count) = signal(0);
     let on_click = move |_| set_count.update(|count| *count += 1);
 
     view! {
