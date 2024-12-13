@@ -124,16 +124,21 @@ pub fn SiteHeader() -> impl IntoView {
                     // Switch Version
                     <SwitchVersion />
                     // Theme toggle
-                    <Button icon=Memo::new(move |_| {
-                        theme
-                            .with(|theme| {
-                                if theme.name == "light" {
-                                    icondata::BiMoonRegular
-                                } else {
-                                    icondata::BiSunRegular
-                                }
-                            })
-                    })>{move || theme_name.get()}</Button>
+                    <Button
+                        icon=Memo::new(move |_| {
+                            theme
+                                .with(|theme| {
+                                    if theme.name == "light" {
+                                        icondata::BiMoonRegular
+                                    } else {
+                                        icondata::BiSunRegular
+                                    }
+                                })
+                        })
+                        on_click=change_theme
+                    >
+                        {move || theme_name.get()}
+                    </Button>
                     // Toggle Ltr / Rtl
                     <Button on_click=move |_| {
                         let Some(dir) = dir else {
