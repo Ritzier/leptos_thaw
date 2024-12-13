@@ -57,9 +57,9 @@ pub fn Home() -> impl IntoView {
                             </Button>
                         </Space>
                     </div>
-                </div>
-                <div style="text-align: center">
-                    <img src="/logo.svg" style="width: 200px" />
+                    <div style="text-align: center">
+                        <img src="/logo.svg" style="width: 200px" />
+                    </div>
                 </div>
             </Layout>
 
