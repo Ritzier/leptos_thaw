@@ -7,6 +7,8 @@ use leptos_router::{
 use thaw::ssr::SSRMountStyleProvider;
 use thaw::*;
 
+use crate::pages::*;
+
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
         <SSRMountStyleProvider>
@@ -70,16 +72,5 @@ fn TheRouter() -> impl IntoView {
                 <Route path=path!("/") view=Home />
             </Routes>
         </Router>
-    }
-}
-
-#[component]
-fn Home() -> impl IntoView {
-    let (count, set_count) = signal(0);
-    let on_click = move |_| set_count.update(|count| *count += 1);
-
-    view! {
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: "{count}</button>
     }
 }
